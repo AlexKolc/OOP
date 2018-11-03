@@ -5,7 +5,6 @@ import java.util.Map;
 
 import Exceptions.*;
 import Exceptions.FileNotFoundException;
-import Exceptions.NumberFormatException;
 
 public class Ini {
     private Map<String, Map<String, String>> parsedData;
