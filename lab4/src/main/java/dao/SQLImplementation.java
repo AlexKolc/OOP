@@ -179,27 +179,4 @@ public class SQLImplementation implements DAO {
                 , rs.getString("Name")
                 , rs.getString("Address"));
     }
-
-    public static void main(String[] args) throws SQLException {
-        SQLImplementation sqlImplementation = new SQLImplementation();// = new SQLImplementation("jdbc:sqlserver://localhost:1433;database=ShopsInformation;integratedSecurity=true");
-
-        sqlImplementation.addShop(new Shop("Дикси", "Кронверский пр. 34"));
-
-        /*PriceList priceList = new PriceList();
-
-        priceList.add(new Price(3, 1, "Шоколад \"Dove\"", 50, 0));
-        priceList.add(new Price(6, 2, "Шоколад \"Dove\"", 150, 0));*/
-        /*priceList.add(new Price(4, 1, "Напиток \"Fanta\"", 30, 5));
-        priceList.add(new Price(5, 1, "Телевизор \"Samsung\"", 15000, 13));*/
-        //sqlImplementation.deliveryOfProducts(priceList);
-        //System.out.println(sqlImplementation.findShopWithMinPrice(new Product("Крем \"Бархатные ручки\"")));
-        Shop shop = new Shop(1);
-        //System.out.println(sqlImplementation.whatCanBuy(shop, 100));
-        ProductList productList = new ProductList();
-        //productList.add(new Product("Шоколад \"Dove\""), 2);
-        productList.add(new Product("Шоколад \"Dove\""), 1);
-        productList.add(new Product("Крем \"Бархатные ручки\""), 3);
-
-        System.out.println(sqlImplementation.findShopWithMinPriceForSetOfProducts(productList));
-    }
 }
