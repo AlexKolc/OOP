@@ -1,0 +1,101 @@
+import annotations.*;
+import org.dom4j.*;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+public class XmlConverter {
+    public static Document XMLFile(Object obj) throws Exception {
+        Class clazz = obj.getClass();
+        if (!clazz.isAnnotationPresent(XmlObject.class)) {
+            throw new Exception("Class hasn't annotation");
+        }
+
+        String clazzName = clazz.getSimpleName().toLowerCase();
+
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement(clazzName); // class name in lower case( xml object )
+
+
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
+
+            if (field.isAnnotationPresent(XmlAttribute.class)) {
+                String tag = field.getAnnotation(XmlAttribute.class).tag();
+                String name = field.getAnnotation(XmlAttribute.class).name();
+                if (name.equals("")) {
+                    name = field.getName();
+                }
+                if (tag.equals("")) {
+                    if (root.attribute(name) != null)
+                        throw new Exception("Attribute with name \"" + name + "\" already exist");
+                    root.addAttribute(name, field.get(obj).toString());
+                    continue;
+                }
+                if (root.element(tag).attribute(name) != null)
+                    throw new Exception("Attribute with name \"" + name + "\" already exist");
+                root.element(tag).addAttribute(name, field.get(obj).toString());
+            }
+
+            if (field.isAnnotationPresent(XmlTag.class)) {
+                if (field.get(obj).getClass().isAnnotationPresent(XmlObject.class)) {
+                    Element newElement = XMLFile(field.get(obj)).getRootElement();
+                    root.add(newElement);
+                    continue;
+                }
+                String name = field.getAnnotation(XmlTag.class).name();
+                if (name.equals("")) {
+                    name = field.getName();
+                }
+                if (root.element(name) != null)
+                    throw new Exception("Tag with name \"" + name + "\" already exist");
+                root.addElement(name).addText((field.get(obj).toString()));
+            }
+        }
+
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.getParameterCount() > 0) {
+                throw new Exception("Method have parameters");
+            }
+            if (method.getGenericReturnType() == void.class) {
+                throw new Exception("Method return void");
+            }
+            method.setAccessible(true);
+
+            if (method.isAnnotationPresent(XmlAttribute.class)) {
+                String tag = method.getAnnotation(XmlAttribute.class).tag();
+                String name = method.getAnnotation(XmlAttribute.class).name();
+                if (name.equals("")) {
+                    name = method.getName();
+                    if (name.startsWith("get", 0)) {
+                        name = name.replaceAll("get", "").toLowerCase();
+                    }
+                }
+                if (tag.equals("")) {
+                    if (root.attribute(name) != null)
+                        throw new Exception("Attribute with name \"" + name + "\" already exist");
+                    root.addAttribute(name, method.invoke(obj).toString());
+                    continue;
+                }
+                if (root.element(tag).attribute(name) != null)
+                    throw new Exception("Attribute with name \"" + name + "\" already exist");
+                root.element(tag).addAttribute(name, method.invoke(obj).toString());
+            }
+
+            if (method.isAnnotationPresent(XmlTag.class)) {
+                String name = method.getAnnotation(XmlTag.class).name();
+                if (name.equals("")) {
+                    name = method.getName();
+                    if (name.startsWith("get", 0)) {
+                        name = name.replaceAll("get", "").toLowerCase();
+                    }
+                }
+                if (root.element(name) != null)
+                    throw new Exception("Tag with name \"" + name + "\" already exist");
+                root.addElement(name).addText((method.invoke(obj).toString()));
+            }
+        }
+
+        return document;
+    }
+}
