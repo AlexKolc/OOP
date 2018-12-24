@@ -10,7 +10,7 @@ public class Main {
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer;
             writer = new XMLWriter(System.out, format);
-            writer.write(XmlConverter.XMLFile(person));
+            //writer.write(XmlConverter.XMLFile(person));
 
             writer.write(XmlConverter.XMLFile(worker));
         } catch (Exception e) {

@@ -11,12 +11,9 @@ public class XmlConverter {
             throw new Exception("Class hasn't annotation");
         }
 
-        String clazzName = clazz.getSimpleName().toLowerCase();
-
         Document document = DocumentHelper.createDocument();
-        Element root = document.addElement(clazzName); // class name in lower case( xml object )
-
-
+        Element root = document.addElement(clazz.getSimpleName().toLowerCase());
+        
         for (Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
 
@@ -67,7 +64,7 @@ public class XmlConverter {
                 String name = method.getAnnotation(XmlAttribute.class).name();
                 if (name.equals("")) {
                     name = method.getName();
-                    if (name.startsWith("get", 0)) {
+                    if (name.startsWith("get")) {
                         name = name.replaceAll("get", "").toLowerCase();
                     }
                 }
@@ -86,7 +83,7 @@ public class XmlConverter {
                 String name = method.getAnnotation(XmlTag.class).name();
                 if (name.equals("")) {
                     name = method.getName();
-                    if (name.startsWith("get", 0)) {
+                    if (name.startsWith("get")) {
                         name = name.replaceAll("get", "").toLowerCase();
                     }
                 }
@@ -95,7 +92,6 @@ public class XmlConverter {
                 root.addElement(name).addText((method.invoke(obj).toString()));
             }
         }
-
         return document;
     }
 }
