@@ -3,6 +3,10 @@ import org.dom4j.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collector;
 
 public class XmlConverter {
     public static Document XMLFile(Object obj) throws Exception {
@@ -13,8 +17,16 @@ public class XmlConverter {
 
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement(clazz.getSimpleName().toLowerCase());
-        
-        for (Field field : clazz.getDeclaredFields()) {
+
+        List<Field> fields = new ArrayList<Field>(){{addAll(Arrays.asList(obj.getClass().getDeclaredFields()));}};
+        List<Method> methods = new ArrayList<Method>(){{addAll(Arrays.asList(obj.getClass().getDeclaredMethods()));}};
+        while (clazz.getSuperclass() != Object.class) {
+            clazz = clazz.getSuperclass();
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+            methods.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+        }
+
+        for (Field field : fields) {
             field.setAccessible(true);
 
             if (field.isAnnotationPresent(XmlAttribute.class)) {
@@ -50,7 +62,7 @@ public class XmlConverter {
             }
         }
 
-        for (Method method : clazz.getDeclaredMethods()) {
+        for (Method method : methods) {
             if (method.getParameterCount() > 0) {
                 throw new Exception("Method have parameters");
             }

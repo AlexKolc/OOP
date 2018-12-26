@@ -4,8 +4,8 @@ import org.dom4j.io.XMLWriter;
 public class Main {
     public static void main(String[] args) {
         try {
-            Person person = new Person("Sergey", "RUS", 32);
-            Worker worker = new Worker(person, "Shop assistant");
+//            Person person = new Person("Sergey", "RUS", 32);
+            Worker worker = new Worker("Sergey", "RUS", 32, "Shop assistant");
 
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer;

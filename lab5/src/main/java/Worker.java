@@ -2,17 +2,16 @@ import annotations.XmlObject;
 import annotations.XmlTag;
 
 @XmlObject
-public class Worker {
+public class Worker extends Person {
     @XmlTag
-    private Person person;
     private String work;
 
-    Worker(Person person, String work) {
-        this.person = person;
+    Worker(String name, String lang, int age, String work) {
+        super(name, lang, age);
         this.work = work;
     }
 
-    @XmlTag
+    @XmlTag(name = "ne work")
     public String getWork() {
         return work;
     }
